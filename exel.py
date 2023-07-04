@@ -72,3 +72,44 @@ st.write(f'Monthly Expenses: ${monthly_expenses:,.2f}')
 cash_flow = yearly_gross_rent - yearly_expenses
 
 st.write(f'Yearly Cash Flow: ${cash_flow:,.2f}')
+st.write(f'Monthly Cash Flow: ${cash_flow/12:,.2f}')
+
+cap_rate = cash_flow / price
+
+st.write(f'Cap Rate: {cap_rate:.2%}')
+
+# %%
+# Add the following import at the top
+from tabulate import tabulate  # Helps print tables in a nice format
+
+# Add the following code at the bottom
+st.write('--------')
+
+st.subheader('Yearly Return on Investment for the first 10 years')
+
+# Initialize lists to hold yearly data
+years = []
+rois = []
+
+# Create amortization table and calculate ROI for each year
+for i in range(1, 11):
+    # Calculate principal paid in year i
+    principal_paid = abs(npf.ppmt(montly_rate, i*12, loan_years*12, mortgage)) * 12
+    
+    # Adjust total capital
+    total_capital -= principal_paid
+    
+    # Adjust cash flow by adding the increase in equity (principal paid)
+    adjusted_cash_flow = cash_flow + principal_paid
+    
+    # Calculate ROI
+    roi = adjusted_cash_flow / total_capital
+    
+    # Add data to lists
+    years.append(i)
+    rois.append(f'{roi:.2%}')
+    
+# Create a table with ROI data
+roi_table = tabulate(zip(years, rois), headers=['Year', 'ROI'], tablefmt='pipe')
+
+st.write(roi_table)
